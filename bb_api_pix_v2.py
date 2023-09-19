@@ -10,26 +10,32 @@ class BadCredentials(Exception):
     ...
 
 
+class EmptyPixList(Exception):
+    ...
+
+
+PATH_SERVER_CERTS = env.PATH_SERVER_CERTS
+PATH_CLIENT_CERTS = env.PATH_SERVER_CERTS
 SERVERS_CONF = {
     'PROD': {
         'auth': {
             'endpoint': 'https://oauth.bb.com.br/oauth/token',
-            'server_cert': 'server_certs/oauth.bb.com.br.cer',
+            'server_cert': 'oauth.bb.com.br.cer',
         },
         'api': {
             'endpoint': 'https://api-pix.bb.com.br/pix/v2/',
-            'server_cert': 'server_certs/api-pix.bb.com.br.cer',
+            'server_cert': 'api-pix.bb.com.br.cer',
         },
     },
 
     'STAGE': {
         'auth': {
             'endpoint': 'https://oauth.sandbox.bb.com.br/oauth/token',
-            'server_cert': 'server_certs/oauth.sandbox.bb.com.br.cer',
+            'server_cert': 'oauth.sandbox.bb.com.br.cer',
         },
         'api': {
             'endpoint': 'https://api-pix.hm.bb.com.br/pix/v2/',
-            'server_cert': 'server_certs/api-pix.hm.bb.com.br.cer',
+            'server_cert': 'api-pix.hm.bb.com.br.cer',
         }
     }
 }
@@ -39,13 +45,13 @@ class BBAuth(AuthBase):
 
     def __init__(self, client_id, client_secret, developer_key, client_certificate, endpoint, server_cert):
         self.credentials = (client_id, client_secret)
-        self.certificate = client_certificate
+        self.certificate = env.PATH_CLIENT_CERTS + client_certificate
         self.developer_key = developer_key
         self._token = None
         self.expires_in = None
 
         self.endpoint = endpoint
-        self.cert = server_cert
+        self.cert = PATH_SERVER_CERTS + server_cert
 
     @property
     def is_valid(self):
@@ -90,9 +96,7 @@ class BBAuth(AuthBase):
             'grant_type': 'client_credentials',
             'code': self.developer_key,
         }
-        #print(self.OAUTH_ENDPOINT)
-        #print(data)
-        #print(self.credentials)
+
         resp = requests.post(self.endpoint, data=data, verify=self.cert, auth=self.credentials)
         if resp.status_code == 401:
             raise BadCredentials()
@@ -101,7 +105,6 @@ class BBAuth(AuthBase):
             raise RuntimeError(resp.json())
 
         json = resp.json()
-        #print(f"JSON: {json}")
         self.token = json['token_type'], json['access_token']
 
         self.expires_in = datetime.now() + timedelta(seconds=json['expires_in'])
@@ -119,7 +122,7 @@ class BBSession(requests.Session):
         super().__init__()
         self.auth = auth
         self.endpoint = endpoint
-        self.server_cert = server_cert
+        self.server_cert = PATH_SERVER_CERTS + server_cert
 
     def request(self, method: str, path='', *args, **kwargs):
         url = self.endpoint + path
@@ -138,7 +141,6 @@ class BBClient:
     @classmethod
     def from_credentials(cls, client_id: str,
                          client_secret: str, developer_key: str, client_certificate: str, enviroment: str):
-
         server_auth = SERVERS_CONF[enviroment]['auth']
         auth = cls.AUTH(client_id, client_secret, developer_key, client_certificate, **server_auth)
         server_api = SERVERS_CONF[enviroment]['api']
@@ -147,10 +149,13 @@ class BBClient:
 
     def request(self, method, path='', params=None, data=None, *args, **kwargs):
         resp = self.session.request(method, path=path, params=params, data=data, *args, **kwargs)
+        if resp.status_code == 404:
+            raise EmptyPixList
+
         resp.raise_for_status()
         return resp
 
-    #init_datetime: '2023-09-01T00:00:01Z'
+    # init_datetime: '2023-09-01T00:00:01UTC-3'
     def received_pixs(self, init_datetime, end_datetime):
         params = {
             'inicio': init_datetime,
@@ -160,4 +165,3 @@ class BBClient:
         resp = self.request('get', path='/pix', params=params)
 
         return resp
-
