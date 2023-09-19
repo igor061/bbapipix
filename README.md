@@ -14,9 +14,9 @@
      - client_id
      - client_secret
 6. No arquivo bbapipix/consulta_pix.py tem um exemplo de como usar
-7. Se precisar pegar os certificados atualizados dos servidores, tem em bbapipix/utils/getserver_certificate.py tem uma
-script que pega a cadeis atual direto dos servidores. Ela preciso openssl instalado.
-Será preciso pegar de todos e no env.py definir a variável PATH_SERVER_CERTS para o diretorio que vc salvar os certificados
+7. Se precisar pegar os certificados atualizados dos servidores, tem em bbapipix/utils/getserver_certificate.py uma
+script que pega a cadeis atual direto dos servidores. Ela precisa do openssl instalado.
+Será preciso pegar de todos e no env.py definir a variável PATH_SERVER_CERTS para o diretorio que vc salvar os certificados.
 O nome do aquivo deve ser o endereco do servidor com a extensao.cer. Exemplo: api-pix.hm.bb.com.br.cer
    
 8. criar um arquivo env.py no raiz do projeto com as seguintes informações de cada empresa:
