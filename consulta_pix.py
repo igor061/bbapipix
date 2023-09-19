@@ -1,4 +1,3 @@
-
 import env
 from bb_api_pix_v2 import BBClient
 
@@ -11,12 +10,10 @@ def pega_lista_pix(credentials, dthr_ini, dthr_fim):
 
     resp = client.received_pixs(dthr_ini, dthr_fim)
 
-    #print(resp.json())
     return resp.json()
 
 
 def trata_resp_pix(json_resp):
-    #pprint(resp_json['pix'])
     dados_pix = []
     for pix in json_resp['pix']:
         dados = {
@@ -31,12 +28,11 @@ def trata_resp_pix(json_resp):
         dados['nome'] = pagador.get('nome')
 
         dados_pix.append(dados)
-        #print(dados)
+
     return dados_pix
 
 
-def consuta_pix(key_credentials, dthr_ini, dthr_fim):
-    credentials = env.credenciais[key_credentials]
+def consuta_pix(credentials, dthr_ini, dthr_fim):
     resp_json = pega_lista_pix(credentials, dthr_ini, dthr_fim)
     dados = trata_resp_pix(resp_json)
     return dados
@@ -52,7 +48,9 @@ if __name__ == '__main__':
         #key_credentials = 'homolog_srgold'
         key_credentials = 'srgold'
 
-        dados = consuta_pix(key_credentials, dthr_ini, dthr_fim)
+        credentials = env.credenciais[key_credentials]
+
+        dados = consuta_pix(credentials, dthr_ini, dthr_fim)
 
         pprint(dados)
 
