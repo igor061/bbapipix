@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-
+import os
 import requests
 from requests.auth import AuthBase
 
@@ -14,8 +14,14 @@ class EmptyPixList(Exception):
     ...
 
 
-PATH_SERVER_CERTS = env.PATH_SERVER_CERTS
-PATH_CLIENT_CERTS = env.PATH_SERVER_CERTS
+if hasattr(env, 'PATH_SERVER_CERTS'):
+    PATH_SERVER_CERTS = env.PATH_SERVER_CERTS
+else:
+    LIBPATH = os.path.dirname(os.path.abspath(__file__))
+    PATH_SERVER_CERTS = LIBPATH+'/server_certs/'
+
+PATH_CLIENT_CERTS = env.PATH_CLIENT_CERTS
+
 SERVERS_CONF = {
     'PROD': {
         'auth': {

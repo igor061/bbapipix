@@ -1,5 +1,5 @@
 import env
-from bb_api_pix_v2 import BBClient
+from bbapipix.bb_api_pix_v2 import BBClient
 
 
 def pega_lista_pix(credentials, dthr_ini, dthr_fim):
