@@ -130,6 +130,7 @@ class BBClient:
         resp.raise_for_status()
         return resp
 
+    #init_datetime: '2023-09-01T00:00:01Z'
     def received_pixs(self, init_datetime, end_datetime):
         params = {
             'inicio': init_datetime,
@@ -146,14 +147,3 @@ class BBClientSandbox(BBClient):
     SESSION = BBSessionSandbox
 
 
-if __name__ == '__main__':
-
-    client = BBClient.from_credentials(
-        **env.credenciais['prod_srgold']
-    )
-
-    resp = client.received_pixs('2023-09-01T00:00:01Z', "2023-09-05T23:59:59Z")
-
-    print(resp.json())
-
-# {"statusCode":401,"error":"Unauthorized","message":"Bad Credentials","attributes":{"error":"Bad Credentials"}}
