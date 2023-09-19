@@ -1,8 +1,6 @@
-# prod_srgold
-import json
 
 import env
-from bbapilib_v2 import BBClient, BBClientSandbox
+from bb_api_pix_v2 import BBClient
 
 
 def pega_lista_pix(credentials, dthr_ini, dthr_fim):

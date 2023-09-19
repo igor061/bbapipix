@@ -10,16 +10,42 @@ class BadCredentials(Exception):
     ...
 
 
-class BBAuth(AuthBase):
-    OAUTH_ENDPOINT = "https://oauth.bb.com.br/oauth/token"
-    USE_CERT = "server_certs/oauth.bb.com.br.cer"
+SERVERS_CONF = {
+    'PROD': {
+        'auth': {
+            'endpoint': 'https://oauth.bb.com.br/oauth/token',
+            'server_cert': 'server_certs/oauth.bb.com.br.cer',
+        },
+        'api': {
+            'endpoint': 'https://api-pix.bb.com.br/pix/v2/',
+            'server_cert': 'server_certs/api-pix.bb.com.br.cer',
+        },
+    },
 
-    def __init__(self, client_id, client_secret, developer_key, certificate):
+    'STAGE': {
+        'auth': {
+            'endpoint': 'https://oauth.sandbox.bb.com.br/oauth/token',
+            'server_cert': 'server_certs/oauth.sandbox.bb.com.br.cer',
+        },
+        'api': {
+            'endpoint': 'https://api-pix.hm.bb.com.br/pix/v2/',
+            'server_cert': 'server_certs/api-pix.hm.bb.com.br.cer',
+        }
+    }
+}
+
+
+class BBAuth(AuthBase):
+
+    def __init__(self, client_id, client_secret, developer_key, client_certificate, endpoint, server_cert):
         self.credentials = (client_id, client_secret)
-        self.certificate = certificate
+        self.certificate = client_certificate
         self.developer_key = developer_key
         self._token = None
         self.expires_in = None
+
+        self.endpoint = endpoint
+        self.cert = server_cert
 
     @property
     def is_valid(self):
@@ -67,7 +93,7 @@ class BBAuth(AuthBase):
         #print(self.OAUTH_ENDPOINT)
         #print(data)
         #print(self.credentials)
-        resp = requests.post(self.OAUTH_ENDPOINT, data=data, verify=self.USE_CERT, auth=self.credentials)
+        resp = requests.post(self.endpoint, data=data, verify=self.cert, auth=self.credentials)
         if resp.status_code == 401:
             raise BadCredentials()
 
@@ -87,29 +113,19 @@ class BBAuth(AuthBase):
         return r
 
 
-class BBAuthSandbox(BBAuth):
-    OAUTH_ENDPOINT = "https://oauth.sandbox.bb.com.br/oauth/token"
-    USE_CERT = "server_certs/oauth.sandbox.bb.com.br.cer"
-
-
 class BBSession(requests.Session):
-    ENDPOINT = "https://api-pix.bb.com.br/pix/v2/"
-    USE_CERT = "server_certs/api-pix.bb.com.br.cer"
 
-    def __init__(self, auth):
+    def __init__(self, auth, endpoint, server_cert):
         super().__init__()
         self.auth = auth
+        self.endpoint = endpoint
+        self.server_cert = server_cert
 
     def request(self, method: str, path='', *args, **kwargs):
-        url = self.ENDPOINT + path
+        url = self.endpoint + path
         # print(url)
-        resp = super().request(method, url, *args, cert=self.auth.certificate, verify=self.USE_CERT, **kwargs)
+        resp = super().request(method, url, *args, cert=self.auth.certificate, verify=self.server_cert, **kwargs)
         return resp
-
-
-class BBSessionSandbox(BBSession):
-    ENDPOINT = "https://api-pix.hm.bb.com.br/pix/v2/"
-    USE_CERT = "server_certs/api-pix.hm.bb.com.br.cer"
 
 
 class BBClient:
@@ -120,9 +136,13 @@ class BBClient:
         self.session = session
 
     @classmethod
-    def from_credentials(cls, client_id: str, client_secret: str, developer_key: str, certificate: str):
-        auth = cls.AUTH(client_id, client_secret, developer_key, certificate)
-        session = cls.SESSION(auth)
+    def from_credentials(cls, client_id: str,
+                         client_secret: str, developer_key: str, client_certificate: str, enviroment: str):
+
+        server_auth = SERVERS_CONF[enviroment]['auth']
+        auth = cls.AUTH(client_id, client_secret, developer_key, client_certificate, **server_auth)
+        server_api = SERVERS_CONF[enviroment]['api']
+        session = cls.SESSION(auth, **server_api)
         return cls(session)
 
     def request(self, method, path='', params=None, data=None, *args, **kwargs):
@@ -140,10 +160,4 @@ class BBClient:
         resp = self.request('get', path='/pix', params=params)
 
         return resp
-
-
-class BBClientSandbox(BBClient):
-    AUTH = BBAuthSandbox
-    SESSION = BBSessionSandbox
-
 
