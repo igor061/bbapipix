@@ -1,0 +1,76 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# CPython
+*.so
+
+# Distribution / packaging
+dist/
+build/
+eggs/
+*.egg-info/
+*.egg
+*.egg-info
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Kivy app logs
+logs/
+
+# virtual environment
+.venv/
+env/
+
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# PyCharm files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Visual Studio Code files
+.vscode/
+
+ensaios
+env.py
+client_certs
