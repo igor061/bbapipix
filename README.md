@@ -29,7 +29,8 @@
    - Se você precisar obter os certificados atualizados dos servidores, utilize o script `bbapipix/utils/getserver_certificate.py`.
    - Certifique-se de ter o OpenSSL instalado.
    - Você precisará obter os certificados de todos os servidores e definir a variável `PATH_SERVER_CERTS` no arquivo `env.py` para o diretório onde você os salvou.
-   - Os nomes dos arquivos devem ser o endereço do servidor com a extensão `.cer`. Por exemplo: `api-pix.hm.bb.com.br.cer`.
+   - Os nomes dos arquivos devem ser o endereço do servidor com a extensão `.cer`. Por exemplo:
+     `api-pix.hm.bb.com.br.cer`.
 
 8. **Configuração do Arquivo `env.py`:**
    - Crie um arquivo `env.py` na raiz do seu projeto com as informações de cada empresa. Um exemplo de configuração está abaixo:
