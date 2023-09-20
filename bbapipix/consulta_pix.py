@@ -43,10 +43,9 @@ if __name__ == '__main__':
 
 
     def teste01():
-        dthr_ini = '2023-09-01T00:00:01Z'
-        dthr_fim = "2023-09-05T23:59:59Z"
-        #key_credentials = 'homolog_srgold'
-        key_credentials = 'srgold'
+        dthr_ini = '2023-09-01T00:00:01UTC-3'
+        dthr_fim = '2023-09-05T23:59:59UTC-3'
+        key_credentials = 'sua_empresa'
 
         credentials = env.credenciais[key_credentials]
 
