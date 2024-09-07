@@ -44,4 +44,4 @@ def load_server_certificates(server):
 
 
 if __name__ == '__main__':
-    load_server_certificates('oauth.bb.com.br')
+    load_server_certificates('api-pix.bb.com.br')
