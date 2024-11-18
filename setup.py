@@ -7,7 +7,7 @@ setup(
     packages=find_packages(),
     package_data={'bbapipix': ['server_certs/*.cer']},
     install_requires=[
-        'pyOpenSSL == 23.2.0',
+        'pyOpenSSL >= 24.2.1',
         'requests == 2.31.0',
     ],
 )
