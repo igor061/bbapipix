@@ -52,7 +52,7 @@ docs/_build/
 logs/
 
 # virtual environment
-.venv/
+.venv*/
 env/
 
 
